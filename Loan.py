@@ -39,35 +39,33 @@ class Loan:
 		if util.bernoulli(daily_PoD) == 1:
 			self.pool.defaultCount += 1
 			self.duration = 0
-			loss = -self.trueLGD*self.notionalAmount
+			loss = self.trueLGD*self.notionalAmount
+			print('Notional Amount:',self.initialBalance)
+			print('Losss given default:',self.trueLGD)
 			print('Loss incurred:',loss)
 			print('Prev UW balances:',self.loanStake)
-			self.loanStake = {uw:0 for uw in self.loanStake.keys()}
+			pct_impairment = loss / sum(list(self.loanStake.values()))
+			if pct_impairment > 1.0:
+				pct_impairment = 1.0
+			print('Pct impairment:',pct_impairment)
+			self.loanStake = {uw:self.loanStake[uw]*(1-pct_impairment) for uw in self.loanStake.keys()}
 			print('New UW balances:',self.loanStake)
+			for uw in self.loanStake.keys():
+				stkTin = uw.stakedTin[self.pool]
+				uw.stakedTin[self.pool] = stkTin*(1-pct_impairment)
+				uw.Pools[self.pool][self] = stkTin*(1-pct_impairment)
+			self.pool.assetValue -= loss
+			self.pool.poolValue = self.pool.assetValue + self.pool.cashReserve
 			self.pool.assets.remove(self)
 		else:
-			#self.outstanding
 			pmt = self.calculateRepayAmount()
-
-			#print('Loan balance:',self.initialBalance)
-			#print('Interest rate:',self.interestRate)
-			#print('Payment amt:',pmt)
-			#print('Remaining duration:',self.duration)
 			self.notionalAmount -= pmt
 			self.duration -= self.EPOCH
 			self.totalRepay += pmt
-			#print('Total repaid:',self.totalRepay)
 			if self.pool.cashOut < (self.pool.seniorTrancheNot*(1+self.pool.seniorAPR)**(self.pool.duration/365)):
 				self.pool.cashOut += pmt
-				#print('Cashout:',self.pool.cashOut)
-				#print('Initial notional:',self.pool.seniorTrancheNot)
+				self.pool.assetValue -= pmt
+				if self.pool.assetValue < 0:
+					self.pool.assetValue = 0
 				self.pool.seniorROI = self.pool.cashOut / self.pool.seniorTrancheNot - 1
 			#else:
-
-
-
-			"""
-			for stkr in self.loanStake.keys():
-				print(stkr.uwId)
-				print(stkr.stakedTin)
-			"""

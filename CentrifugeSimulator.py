@@ -44,10 +44,13 @@ if __name__ == '__main__':
 	Graphical.uwTinPlot(Underwriters,ns3)
 	generatePortfolio(ns3)
 
-	for _ in range(365):
+
+	for i in range(365):
 	#while True:
+		print(f'--------------------- EPOCH {i+1} ---------------------')
 		passEpoch(ns3)
 		ns3.printDetails()
 		Graphical.uwTinPlot(Underwriters,ns3)
 
-	print(ns3.defaultCount)
+	print('Defaults:',ns3.defaultCount)
+
