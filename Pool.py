@@ -39,7 +39,7 @@ class Pool:
 			self.cashDrag = self.cashReserve / self.poolValue
 
 		self.seniorROI = 0
-		self.juniorROI = 0
+		self.juniorROI = -1.0
 		self.printDetails()
 
 	def calculateJuniorAPR(self):

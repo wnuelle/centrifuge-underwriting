@@ -32,6 +32,9 @@ def generatePortfolio(Pool):
 		print()
 		Pool.printDetails()
 
+	Pool.cashOut = Pool.cashReserve
+	Pool.cashReserve = 0
+
 if __name__ == '__main__':
 
 	ns3 = Pool('NS3','NewSilver',0.034)
@@ -44,7 +47,7 @@ if __name__ == '__main__':
 	Graphical.uwTinPlot(Underwriters,ns3)
 	generatePortfolio(ns3)
 
-
+	
 	for i in range(365):
 	#while True:
 		print(f'--------------------- EPOCH {i+1} ---------------------')
@@ -53,4 +56,4 @@ if __name__ == '__main__':
 		Graphical.uwTinPlot(Underwriters,ns3)
 
 	print('Defaults:',ns3.defaultCount)
-
+	
