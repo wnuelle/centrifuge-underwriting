@@ -5,11 +5,12 @@ import json
 MINIMUM_TIN_THRESHOLD = 5000
 
 class Pool:
-	def __init__(self,name,assetOriginator,seniorAPR):
+	def __init__(self,name,assetOriginator,seniorAPR,uws):
 		### Overview
 		self.name = name
 		self.assetOriginator = assetOriginator
 		self.defaultCount = 0
+		self.uws = uws
 
 		### Investors 
 		self.principalInvested = 0
@@ -133,10 +134,43 @@ class Pool:
 
 	def loanRepayments(self):
 		#print('##### LOAN PAYMENTS #####')
-		
+		epochPmt = 0
 		for asset in self.assets:
-			asset.repay()
+			epochPmt += asset.repay()
 
+		if self.cashOut < (self.seniorTrancheNot*(1+self.seniorAPR)**(self.duration/365)):
+			self.cashOut += epochPmt
+			self.assetValue -= epochPmt
+			if self.assetValue < 0:
+				self.assetValue = 0
+			self.seniorROI = self.cashOut / self.seniorTrancheNot - 1
+		else:
+			self.cashOut += epochPmt
+			self.assetValue -= epochPmt
+			if self.assetValue < 0:
+				self.assetValue = 0
+			self.juniorROI = (self.cashOut - (self.seniorTrancheNot*(1+self.seniorAPR)**(self.duration/365))) / self.juniorTrancheNot - 1
+
+		
+		"""
+		print(epochPmt)
+		for uw in self.uws: 
+
+				pctTranche_tin = (uw.tin[self]) / self.juniorTrancheNot
+				print(uw.tin[self])
+				print(self.juniorTrancheNot)
+				print(pctTranche_tin)
+
+
+				pctTranche_stktin = (uw.stakedTin[self]) / self.juniorTrancheNot
+				print(pctTranche_stktin)
+				print()
+				uw.tin[self] += epochPmt * pctTranche_tin
+				uw.stakedTin[self] += epochPmt * pctTranche_stktin
+				uw.updateNotionalBal()
+				uw.tracker()
+		"""
+	
 	def tracker(self):
 		self.seniorROIHist.append(self.seniorROI)
 		self.juniorROIHist.append(self.juniorROI)

@@ -57,24 +57,14 @@ class Loan:
 			self.pool.assetValue -= loss
 			self.pool.poolValue = self.pool.assetValue + self.pool.cashReserve
 			self.pool.assets.remove(self)
+			return 0
 		else:
 			pmt = self.calculateRepayAmount()
 			self.notionalAmount -= pmt
 			self.duration -= self.EPOCH
 			self.totalRepay += pmt
-			if self.pool.cashOut < (self.pool.seniorTrancheNot*(1+self.pool.seniorAPR)**(self.pool.duration/365)):
-				self.pool.cashOut += pmt
-				self.pool.assetValue -= pmt
-				if self.pool.assetValue < 0:
-					self.pool.assetValue = 0
-				self.pool.seniorROI = self.pool.cashOut / self.pool.seniorTrancheNot - 1
-			else:
-				self.pool.cashOut += pmt
-				self.pool.assetValue -= pmt
-				if self.pool.assetValue < 0:
-					self.pool.assetValue = 0
-				self.pool.juniorROI = (self.pool.cashOut - (self.pool.seniorTrancheNot*(1+self.pool.seniorAPR)**(self.pool.duration/365))) / self.pool.juniorTrancheNot - 1
-			
+			return pmt
+
 		self.tracker()
 
 	def tracker(self):

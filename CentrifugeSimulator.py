@@ -41,12 +41,11 @@ def generatePortfolio(Pool):
 def simulate():
 
 	global Underwriters
+	Underwriters = [Underwriter() for _ in range(20)]
 
-	ns3 = Pool('NS3','NewSilver',0.034)
+	ns3 = Pool('NS3','NewSilver',0.034,Underwriters)
 	ns3.newInvestment(900000,senior=True,junior=False)
 	ns3.newInvestment(100000,senior=False,junior=True)
-
-	Underwriters = [Underwriter() for _ in range(20)]
 	[uw.buyTin(ns3,amt=random.randint(0,10000)) for uw in Underwriters]
 	
 	Graphical.uwTinPlot(Underwriters,ns3)
@@ -62,13 +61,15 @@ def simulate():
 
 	Graphical.PoolPayoutPlot(ns3)
 
+	"""
 	for uw in Underwriters:
 		print(uw.uwId)
 		print(uw.tin)
 		print(uw.stakedTin)
 		print(uw.notionalBalHist)
+		print(len(uw.notionalBalHist))
 		print()
-
+	"""
 
 if __name__ == '__main__':
 	for _ in range(1):
