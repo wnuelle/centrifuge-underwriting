@@ -10,6 +10,12 @@ class Underwriter:
 		self.stakedTin = {}
 		self.Pools = {}
 
+		self.notionalBal = 0
+		self.notionalBalHist = []  
+
+	def updateNotionalBal(self):
+		self.notionalBal = sum(list(self.tin.values())) + sum(list(self.stakedTin.values()))
+
 	def buyTin(self,Pool,amt):
 		### Distribution
 		amt=random.randint(0,10000)
@@ -22,6 +28,7 @@ class Underwriter:
 			tin_ = 0
 			tin_ += amt
 			self.tin[Pool] = tin_
+		self.stakedTin[Pool] = 0.0
 
 	def evalProposals(self,Pool):
 
@@ -35,3 +42,6 @@ class Underwriter:
 		self.stakedTin[Pool] = self.stakedTin.get(Pool, 0) + amt
 		self.tin[Pool] -= amt
 		self.Pools[Pool] = {loan:amt}
+
+	def tracker(self):
+		self.notionalBalHist.append(self.notionalBal)

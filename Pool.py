@@ -42,6 +42,11 @@ class Pool:
 		self.juniorROI = -1.0
 		self.printDetails()
 
+		### Historical tracker
+		self.seniorROIHist = []
+		self.juniorROIHist = []
+		self.defaultCountHist = []
+
 	def calculateJuniorAPR(self):
 		#self.juniorAPR = self.principalInvested*self.
 		return 0
@@ -132,6 +137,10 @@ class Pool:
 		for asset in self.assets:
 			asset.repay()
 
+	def tracker(self):
+		self.seniorROIHist.append(self.seniorROI)
+		self.juniorROIHist.append(self.juniorROI)
+		self.defaultCountHist.append(self.defaultCount)
 
 	def printDetails(self):
 		print()

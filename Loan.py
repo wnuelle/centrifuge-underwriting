@@ -24,6 +24,11 @@ class Loan:
 		self.proposalStake = {}
 		self.loanStake = {}
 		self.totalRepay = 0
+
+		### Historical data
+		self.outstandingHist = []
+		self.totalRepayHist = []
+
 	
 	def calculateRepayAmount(self):
 		
@@ -69,8 +74,10 @@ class Loan:
 				if self.pool.assetValue < 0:
 					self.pool.assetValue = 0
 				self.pool.juniorROI = (self.pool.cashOut - (self.pool.seniorTrancheNot*(1+self.pool.seniorAPR)**(self.pool.duration/365))) / self.pool.juniorTrancheNot - 1
+			
+		self.tracker()
 
-
-
-
+	def tracker(self):
+		self.outstandingHist.append(self.notionalAmount)
+		self.totalRepayHist.append(self.totalRepay)
 
