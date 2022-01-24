@@ -27,6 +27,9 @@ class Pool:
 		self.assets = []
 		self.hopper = []
 
+		self.dropHolders = {}
+		self.tinHolders = {}
+
 		### Metrics
 		self.poolValue = self.assetValue + self.cashReserve
 		if self.poolValue == 0:
@@ -111,13 +114,15 @@ class Pool:
 		if Loan in self.hopper:
 			return True
 
-	def newInvestment(self,amt,senior=True,junior=False):
+	def newInvestment(self,buyer,amt,senior=True,junior=False):
 		if senior and junior:
 			raise Error('Cant invest in both senior and junior')
 		if senior:
 			self.seniorTrancheNot += amt
+			self.dropHolders[buyer] = amt
 		if junior:
 			self.juniorTrancheNot += amt
+			self.tinHolders[buyer] = amt
 		self.principalInvested += amt
 		self.cashReserve += amt
 		self.poolValue = self.assetValue + self.cashReserve
@@ -151,6 +156,9 @@ class Pool:
 				self.assetValue = 0
 			self.juniorROI = (self.cashOut - (self.seniorTrancheNot*(1+self.seniorAPR)**(self.duration/365))) / self.juniorTrancheNot - 1
 
+		print('Tin holders:',self.tinHolders)
+		print()
+		print('Drop holders:',self.dropHolders)
 		
 		"""
 		print(epochPmt)

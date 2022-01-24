@@ -1,6 +1,7 @@
 import pandas as pd
 from Loan import Loan
 from Pool import Pool
+from Investor import Investor
 from Underwriter import Underwriter
 import Graphical
 import random
@@ -43,11 +44,12 @@ def simulate():
 	global Underwriters
 	Underwriters = [Underwriter() for _ in range(20)]
 
+	Inv1 = Investor()
 	ns3 = Pool('NS3','NewSilver',0.034,Underwriters)
-	ns3.newInvestment(900000,senior=True,junior=False)
-	ns3.newInvestment(100000,senior=False,junior=True)
+	Inv1.buyTin(ns3,100000)
+	Inv1.buyDrop(ns3,900000)
 	[uw.buyTin(ns3,amt=random.randint(0,10000)) for uw in Underwriters]
-	
+
 	Graphical.uwTinPlot(Underwriters,ns3)
 	generatePortfolio(ns3)
 
@@ -60,7 +62,6 @@ def simulate():
 		Graphical.uwTinPlot(Underwriters,ns3)
 
 	Graphical.PoolPayoutPlot(ns3)
-
 	"""
 	for uw in Underwriters:
 		print(uw.uwId)
@@ -72,5 +73,5 @@ def simulate():
 	"""
 
 if __name__ == '__main__':
-	for _ in range(1):
+	for _ in range(5):
 		simulate()
